@@ -42,15 +42,13 @@ const write = (message) => {
 const writeEvent = (type, payload) => write(`${type} - ${JSON.stringify(payload)}`);
 
 const signaling = new VieroWebRTCSignalingClientImpl(serverUrl, channel);
-signaling.addEventListener(VieroWebRTCSignalingCommon.SIGNAL.ENTER, (evt) => {
-  writeEvent(VieroWebRTCSignalingCommon.SIGNAL.ENTER, evt.detail);
-});
-signaling.addEventListener(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, (evt) => {
-  writeEvent(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, evt.detail);
-});
-signaling.addEventListener(VieroWebRTCSignalingCommon.SIGNAL.LEAVE, (evt) => {
-  writeEvent(VieroWebRTCSignalingCommon.SIGNAL.LEAVE, evt.detail);
-});
+
+[
+  VieroWebRTCSignalingCommon.SIGNAL.ENTER,
+  VieroWebRTCSignalingCommon.SIGNAL.MESSAGE,
+  VieroWebRTCSignalingCommon.SIGNAL.LEAVE,
+].forEach((type) => signaling.addEventListener(type, (evt) => writeEvent(type, evt.detail)));
+
 signaling.connect().then(() => {
   write("CONNECTED");
   setInterval(() => {
