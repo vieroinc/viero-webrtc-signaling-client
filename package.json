@@ -1,0 +1,39 @@
+{
+  "name": "@viero/webrtc-signaling-client",
+  "version": "1.0.0",
+  "description": "WebRTC signaling client library by @vieroinc.",
+  "main": "index.js",
+  "homepage": "https://github.com/vieroinc/viero-webrtc-signaling-client",
+  "contributors": [
+    {
+      "name": "Zoltan Gobolos",
+      "email": "zoltan.gobolos@viero.tv"
+    }
+  ],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vieroinc/viero-webrtc-signaling-client.git"
+  },
+  "scripts": {
+    "clean": "rm -rf index.js viero",
+    "reset": "rm -rf index.js viero node_modules",
+    "babel": "babel src -d . --source-maps inline",
+    "prepublishOnly": "babel src -d . --source-maps inline"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "dependencies": {
+    "@viero/common": "^1.4.3",
+    "@viero/webrtc-signaling-common": "^1.0.1",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4"
+  }
+}
