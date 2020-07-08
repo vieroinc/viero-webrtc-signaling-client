@@ -70,12 +70,12 @@ export class VieroWebRTCSignalingClientImpl extends VieroWebRTCSignalingClient {
             [VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, 'dispatchMessage'],
             [VieroWebRTCSignalingCommon.SIGNAL.LEAVE, 'dispatchLeave'],
           ].forEach((def) => {
-            this._socket.on(def[0], (payload) => {
-              if (!payload) return;
+            this._socket.on(def[0], (message) => {
+              if (!message) return;
               if (log.isDebug()) {
-                log.debug(`SIG IN ${def[0]}`, payload);
+                log.debug(`SIG IN ${def[0]}`, message);
               }
-              this[def[1]](payload);
+              this[def[1]](message);
             });
           });
           resolve();
@@ -94,10 +94,11 @@ export class VieroWebRTCSignalingClientImpl extends VieroWebRTCSignalingClient {
 
   send(payload) {
     if (this._socket) {
+      const message = { from: this._socket.id, payload };
       if (log.isDebug()) {
-        log.debug(`SIG OUT ${VieroWebRTCSignalingCommon.SIGNAL.MESSAGE}`, payload);
+        log.debug(`SIG OUT ${VieroWebRTCSignalingCommon.SIGNAL.MESSAGE}`, message);
       }
-      this._socket.emit(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, payload);
+      this._socket.emit(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, message);
     }
   }
 
