@@ -14,15 +14,89 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import SocketIO from 'socket.io-client';
 import { VieroError } from '@viero/common/error';
+import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
+
+const log = new VieroLog('/signaling/viero');
+
+const _createNamespace = (url, name) => {
+  return fetch(`${url}/signaling/namespace`, {
+    method: 'POST', headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name }),
+  }).then((res) => {
+    if (201 === res.status) {
+      return Promise.resolve();
+    }
+    return Promise.reject(new VieroError('/signaling/viero', 791221));
+  });
+}
 
 export class VieroWebRTCSignalingClient extends EventTarget {
 
-  send(payload) {
-    throw new VieroError('/signaling', 458599, {
-      [VieroError.KEY.MESSAGE]: 'VieroWebRTCSignalingClient().send(...) is not implemented!',
+  constructor(url, channel) {
+    super();
+    if (!url) {
+      throw new VieroError('/signaling/viero', 791222);
+    }
+    if (!channel) {
+      throw new VieroError('/signaling/viero', 791223);
+    }
+    if (!/^([a-zA-Z0-9\-].*){4,}$/.test(channel)) {
+      throw new VieroError('/signaling/viero', 791224);
+    }
+    this._url = url;
+    this._channel = channel;
+  }
+
+  get connected() {
+    return !!this._socket;
+  }
+
+  connect() {
+    return new Promise((resolve, reject) => {
+      if (this._socket) return resolve();
+      _createNamespace(this._url, this._channel)
+        .then(() => {
+          this._socket = SocketIO(`${this._url}/${this._channel}`);
+          [
+            [VieroWebRTCSignalingCommon.SIGNAL.ENTER, 'dispatchEnter', 'Enter'],
+            [VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, 'dispatchMessage', 'Message'],
+            [VieroWebRTCSignalingCommon.SIGNAL.LEAVE, 'dispatchLeave', 'Leave'],
+          ].forEach((def) => {
+            this._socket.on(def[0], (message) => {
+              if (!message) return;
+              if (log.isDebug()) {
+                log.debug(`${def[2]} IN`, message);
+              }
+              this[def[1]](message);
+            });
+          });
+          resolve();
+        }).catch((err) => reject(err));
     });
+  }
+
+  disconnect() {
+    return new Promise((resolve) => {
+      if (!this._socket) return resolve();
+      this._socket.disconnect();
+      this._socket = void 0;
+      resolve();
+    });
+  }
+
+  send(payload, to) {
+    if (this._socket) {
+      const message = { payload, ...(to ? { to } : {}) };
+      if (log.isDebug()) {
+        log.debug(`Message OUT`, message);
+      }
+      this._socket.emit(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, message);
+    }
   }
 
   dispatchEnter(detail) {

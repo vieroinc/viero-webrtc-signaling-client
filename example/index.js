@@ -18,7 +18,7 @@ import { VieroUID } from '@viero/common/uid';
 import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
 import { VieroWindowUtils } from '@viero/common-web/window/utils';
-import { VieroWebRTCSignalingClientImpl } from '../viero';
+import { VieroWebRTCSignalingClient } from '../';
 
 const serverUrl = 'http://localhost:8090';
 
@@ -41,7 +41,7 @@ const write = (message) => {
 
 const writeEvent = (type, payload) => write(`${type} - ${JSON.stringify(payload)}`);
 
-const signaling = new VieroWebRTCSignalingClientImpl(serverUrl, channel);
+const signaling = new VieroWebRTCSignalingClient(serverUrl, channel);
 
 [
   VieroWebRTCSignalingCommon.SIGNAL.ENTER,
