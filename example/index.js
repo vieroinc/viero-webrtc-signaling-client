@@ -31,12 +31,12 @@ if (!channel) {
   location.href = urlObj.toString();
 }
 
-const write = (message) => {
+const write = (envelope) => {
   const item = VieroWindowUtils.createElement('div', {
     classes: ['item'],
     container: document.body,
   });
-  item.textContent = message;
+  item.textContent = envelope;
 };
 
 const writeEvent = (type, payload) => write(`${type} - ${JSON.stringify(payload)}`);
