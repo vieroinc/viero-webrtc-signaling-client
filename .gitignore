@@ -1,4 +1,5 @@
 .DS_Store
 node_modules
 index.bundle.js
+index.bundle.js.map
 /index.js
