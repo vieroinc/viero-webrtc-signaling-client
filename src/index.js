@@ -15,6 +15,7 @@
  */
 
 import SocketIO from 'socket.io-client';
+import { EventTarget } from "event-target-shim";
 import { VieroError } from '@viero/common/error';
 import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
