@@ -1,5 +1,7 @@
 .DS_Store
 node_modules
+/dist
+
+# example spec
 index.bundle.js
 index.bundle.js.map
-/index.js

@@ -63,16 +63,16 @@ export class VieroWebRTCSignalingClient extends EventTarget {
         .then(() => {
           this._socket = SocketIO(`${this._url}/${this._channel}`);
           [
-            [VieroWebRTCSignalingCommon.SIGNAL.ENTER, 'dispatchEnter', 'Enter'],
-            [VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, 'dispatchMessage', 'Message'],
-            [VieroWebRTCSignalingCommon.SIGNAL.LEAVE, 'dispatchLeave', 'Leave'],
+            [VieroWebRTCSignalingCommon.SIGNAL.ENTER, this.dispatchEnter.bind(this), 'Enter'],
+            [VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, this.dispatchMessage.bind(this), 'Message'],
+            [VieroWebRTCSignalingCommon.SIGNAL.LEAVE, this.dispatchLeave.bind(this), 'Leave'],
           ].forEach((def) => {
             this._socket.on(def[0], (envelope) => {
               if (!envelope) return;
               if (log.isDebug()) {
                 log.debug(`${def[2]} IN`, envelope);
               }
-              this[def[1]](envelope);
+              def[1](envelope);
             });
           });
           resolve();
