@@ -1,6 +1,6 @@
 {
   "name": "@viero/webrtc-signaling-client",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "WebRTC signaling client library by @vieroinc.",
   "homepage": "https://github.com/vieroinc/viero-webrtc-signaling-client",
   "contributors": [
