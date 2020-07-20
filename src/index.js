@@ -15,29 +15,27 @@
  */
 
 import SocketIO from 'socket.io-client';
-import { EventTarget } from "event-target-shim";
+import { EventTarget } from 'event-target-shim';
 import { VieroError } from '@viero/common/error';
 import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
 
 const log = new VieroLog('/signaling/viero');
 
-const _createNamespace = (url, name) => {
-  return fetch(`${url}/signaling/namespace`, {
-    method: 'POST', headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name }),
-  }).then((res) => {
-    if (201 === res.status) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new VieroError('/signaling/viero', 791221));
-  });
-}
+const createNamespace = (url, name) => fetch(`${url}/signaling/namespace`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ name }),
+}).then((res) => {
+  if (res.status === 201) {
+    return Promise.resolve();
+  }
+  return Promise.reject(new VieroError('/signaling/viero', 791221));
+});
 
 export class VieroWebRTCSignalingClient extends EventTarget {
-
   constructor(url, channel) {
     super();
     if (!url) {
@@ -46,7 +44,7 @@ export class VieroWebRTCSignalingClient extends EventTarget {
     if (!channel) {
       throw new VieroError('/signaling/viero', 791223);
     }
-    if (!/^([a-zA-Z0-9\-].*){4,}$/.test(channel)) {
+    if (!/^([a-zA-Z0-9-].*){4,}$/.test(channel)) {
       throw new VieroError('/signaling/viero', 791224);
     }
     this._url = url;
@@ -59,8 +57,11 @@ export class VieroWebRTCSignalingClient extends EventTarget {
 
   connect() {
     return new Promise((resolve, reject) => {
-      if (this._socket) return resolve();
-      _createNamespace(this._url, this._channel)
+      if (this._socket) {
+        resolve();
+        return;
+      }
+      createNamespace(this._url, this._channel)
         .then(() => {
           this._socket = SocketIO(`${this._url}/${this._channel}`);
           [
@@ -83,9 +84,12 @@ export class VieroWebRTCSignalingClient extends EventTarget {
 
   disconnect() {
     return new Promise((resolve) => {
-      if (!this._socket) return resolve();
+      if (!this._socket) {
+        resolve();
+        return;
+      }
       this._socket.disconnect();
-      this._socket = void 0;
+      this._socket = undefined;
       resolve();
     });
   }
@@ -94,7 +98,7 @@ export class VieroWebRTCSignalingClient extends EventTarget {
     if (this._socket) {
       const envelope = { payload, ...(to ? { to } : {}) };
       if (log.isDebug()) {
-        log.debug(`Message OUT`, envelope);
+        log.debug('Message OUT', envelope);
       }
       this._socket.emit(VieroWebRTCSignalingCommon.SIGNAL.MESSAGE, envelope);
     }
@@ -111,5 +115,4 @@ export class VieroWebRTCSignalingClient extends EventTarget {
   dispatchLeave(detail) {
     this.dispatchEvent(new CustomEvent(VieroWebRTCSignalingCommon.SIGNAL.LEAVE, { detail }));
   }
-
 }

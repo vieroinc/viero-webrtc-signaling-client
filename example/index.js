@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import { VieroUID } from '@viero/common/uid';
+import { shortUId } from '@viero/common/uid';
 import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
 import { VieroWindowUtils } from '@viero/common-web/window/utils';
@@ -27,7 +27,7 @@ VieroLog.level = VieroLog.LEVEL.TRACE;
 const urlObj = new URL(location.href);
 const channel = urlObj.searchParams.get('channel');
 if (!channel) {
-  urlObj.searchParams.set('channel', VieroUID.short());
+  urlObj.searchParams.set('channel', shortUId());
   location.href = urlObj.toString();
 }
 
