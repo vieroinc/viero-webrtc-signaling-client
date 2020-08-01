@@ -17,7 +17,7 @@
 import { shortUId } from '@viero/common/uid';
 import { VieroLog } from '@viero/common/log';
 import { VieroWebRTCSignalingCommon } from '@viero/webrtc-signaling-common';
-import { VieroWindowUtils } from '@viero/common-web/window/utils';
+import { createElement } from '@viero/ui/utils';
 import { VieroWebRTCSignalingClient } from '../';
 
 const serverUrl = 'http://localhost:8090';
@@ -32,7 +32,7 @@ if (!channel) {
 }
 
 const write = (envelope) => {
-  const item = VieroWindowUtils.createElement('div', {
+  const item = createElement('div', {
     classes: ['item'],
     container: document.body,
   });
